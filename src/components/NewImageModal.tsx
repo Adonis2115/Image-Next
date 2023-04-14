@@ -36,8 +36,8 @@ export default function NewImageModal(props: ModalProps) {
     setUploading(true);
     try {
       if (!image) return;
-      const formData: any = new FormData();
-      formData.append(name, image, description);
+      const formData = new FormData();
+      formData.append(name, image);
       const data = await axios.post("/api/imageUpload", formData);
       console.log(data);
     } catch (error: any) {
@@ -57,7 +57,7 @@ export default function NewImageModal(props: ModalProps) {
           <Image
             alt="preview image"
             src={selectedImage}
-            width="200"
+            width="300"
             height="200"
           />
         ) : null}

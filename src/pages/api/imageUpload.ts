@@ -1,21 +1,47 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+import formidable from "formidable";
+import path from "path";
+import fs from "fs/promises";
 
-type Data = {
-  name: string;
-  image: File;
-  description: string;
+export const config = {
+  api: {
+    bodyParser: false,
+  },
 };
 
-export default function imageUpload(req: NextApiRequest, res: NextApiResponse) {
-  // const name = req.body.name;
-  // const description = req.body.description;
-  // const image = req.body.image;
-  // console.log(name);
-  // console.log(description);
-  // console.log(image);
-  console.log(req.body);
-  res
-    .status(200)
-    .json({ name: "name, description: description, image: image " });
-}
+const readFile = (
+  req: NextApiRequest,
+  saveLocally?: boolean
+): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
+  const options: formidable.Options = {};
+  if (saveLocally) {
+    options.uploadDir = path.join(process.cwd(), "/public/images");
+    options.filename = (name, ext, path, form) => {
+      return Date.now().toString() + "_" + path.originalFilename;
+    };
+  }
+  options.maxFileSize = 4000 * 1024 * 1024;
+  const form = formidable(options);
+  return new Promise((resolve, reject) => {
+    form.parse(req, (err, fields, files) => {
+      if (err) reject(err);
+      resolve({ fields, files });
+    });
+  });
+};
+
+const handler: NextApiHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  try {
+    await fs.readdir(path.join(process.cwd() + "/public", "/images"));
+  } catch (error) {
+    await fs.mkdir(path.join(process.cwd() + "/public", "/images"));
+  }
+  await readFile(req, true);
+  res.json({ done: "ok" });
+};
+
+export default handler;
