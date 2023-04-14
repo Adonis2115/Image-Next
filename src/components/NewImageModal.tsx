@@ -5,6 +5,8 @@ import Modal from "@mui/material/Modal";
 import { TextField } from "@mui/material";
 import { useState } from "react";
 import ImageUpload from "./ImageUpload";
+import Image from "next/image";
+import axios from "axios";
 
 const style = {
   position: "absolute" as "absolute",
@@ -26,11 +28,22 @@ interface ModalProps {
 export default function NewImageModal(props: ModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState(null);
-  const uploadHandler = () => {
-    console.log(name);
-    console.log(description);
-    console.log(image);
+  const [image, setImage] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+  console.log(image);
+  const uploadHandler = async () => {
+    setUploading(true);
+    try {
+      if (!image) return;
+      const formData: any = new FormData();
+      formData.append(name, image, description);
+      const data = await axios.post("/api/imageUpload", formData);
+      console.log(data);
+    } catch (error: any) {
+      console.log(error);
+    }
+    setUploading(false);
   };
   return (
     <Modal open={props.open} onClose={props.handleClose}>
@@ -39,7 +52,16 @@ export default function NewImageModal(props: ModalProps) {
           Add New Image
         </Typography>
         <Typography sx={{ mt: 2 }}>Photo Upload</Typography>
-        <ImageUpload setImage={setImage} />
+        <ImageUpload setImage={setImage} setSelectedImage={setSelectedImage} />
+        {image ? (
+          <Image
+            alt="preview image"
+            src={selectedImage}
+            width="200"
+            height="200"
+          />
+        ) : null}
+
         <TextField
           label="Name"
           variant="outlined"
@@ -55,8 +77,13 @@ export default function NewImageModal(props: ModalProps) {
           fullWidth
           onChange={(e) => setDescription(e.target.value)}
         />
-        <Button variant="outlined" sx={{ mt: 2 }} onClick={uploadHandler}>
-          Submit
+        <Button
+          disabled={uploading}
+          variant="outlined"
+          sx={{ mt: 2 }}
+          onClick={uploadHandler}
+        >
+          {uploading ? "Uploading.." : "Upload"}
         </Button>
       </Box>
     </Modal>

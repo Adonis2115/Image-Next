@@ -1,13 +1,17 @@
-const FileUploader = (props: { setImage: any }) => {
-  const selectImage = (event: any) => {
-    const image = event.target.files[0];
-    image.isUploading = true;
-    props.setImage(image);
-  };
+const FileUploader = (props: { setImage: any; setSelectedImage: any }) => {
   return (
     <div>
       <div>
-        <input type="file" onChange={selectImage} />
+        <input
+          type="file"
+          onChange={({ target }) => {
+            if (target.files) {
+              const file = target.files[0];
+              props.setSelectedImage(URL.createObjectURL(file));
+              props.setImage(file);
+            }
+          }}
+        />
       </div>
     </div>
   );
