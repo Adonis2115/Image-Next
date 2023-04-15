@@ -31,7 +31,7 @@ export default async function imageUploadS3(
     };
     try {
       const imageDetails = await s3.upload(params).promise();
-      const record = await prisma.Images.create({
+      const record = await prisma.images.create({
         data: {
           name: fields.fileName,
           description: fields.description,
