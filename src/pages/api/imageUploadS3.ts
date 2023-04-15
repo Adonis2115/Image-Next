@@ -1,6 +1,7 @@
 import aws from "aws-sdk";
 import formidable from "formidable";
 import { NextApiRequest, NextApiResponse } from "next";
+import prisma from "../../../prisma/client";
 
 export const config = {
   api: {
@@ -29,8 +30,15 @@ export default async function imageUploadS3(
       Body: files.image.filepath,
     };
     try {
-      const data = await s3.upload(params).promise();
-      res.status(200).json({ message: data });
+      const imageDetails = await s3.upload(params).promise();
+      const record = await prisma.Images.create({
+        data: {
+          name: fields.fileName,
+          description: fields.description,
+          imageUrl: imageDetails.Location,
+        },
+      });
+      res.status(200).json({ message: record });
     } catch (error) {
       res.status(500).json({ error });
     }

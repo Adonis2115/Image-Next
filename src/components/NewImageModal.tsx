@@ -40,6 +40,7 @@ export default function NewImageModal(props: ModalProps) {
       formData.append("description", description);
       formData.append("image", image);
       const data = await axios.post("/api/imageUploadS3", formData);
+      console.log(data);
     } catch (error: any) {
       console.log(error);
     }
