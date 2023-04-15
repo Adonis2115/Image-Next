@@ -8,7 +8,10 @@ export const config = {
     bodyParser: false,
   },
 };
-
+interface Fields {
+  fileName: string;
+  description: string;
+}
 export default async function imageUploadS3(
   req: NextApiRequest,
   res: NextApiResponse
@@ -33,8 +36,12 @@ export default async function imageUploadS3(
       const imageDetails = await s3.upload(params).promise();
       const record = await prisma.images.create({
         data: {
-          name: fields.fileName,
-          description: fields.description,
+          name: Array.isArray(fields.fileName)
+            ? fields.fileName[0]
+            : fields.fileName,
+          description: Array.isArray(fields.description)
+            ? fields.description[0]
+            : fields.description,
           imageUrl: imageDetails.Location,
         },
       });
