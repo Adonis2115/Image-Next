@@ -22,7 +22,7 @@ const style = {
 
 interface ModalProps {
   open: boolean;
-  handleClose: (event: {}, reason: "backdropClick" | "escapeKeyDown") => void;
+  handleClose: () => void;
 }
 
 export default function NewImageModal(props: ModalProps) {
@@ -40,7 +40,11 @@ export default function NewImageModal(props: ModalProps) {
       formData.append("description", description);
       formData.append("image", image);
       const data = await axios.post("/api/imageUploadS3", formData);
-      console.log(data);
+      console.log(data.data.message);
+      props.handleClose();
+      setName("");
+      setDescription("");
+      setImage(null);
     } catch (error: any) {
       console.log(error);
     }
