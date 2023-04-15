@@ -31,15 +31,15 @@ export default function NewImageModal(props: ModalProps) {
   const [image, setImage] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
-  console.log(image);
   const uploadHandler = async () => {
     setUploading(true);
     try {
       if (!image) return;
       const formData = new FormData();
-      formData.append(name, image);
-      const data = await axios.post("/api/imageUpload", formData);
-      console.log(data);
+      formData.append("fileName", name);
+      formData.append("description", description);
+      formData.append("image", image);
+      const data = await axios.post("/api/imageUploadS3", formData);
     } catch (error: any) {
       console.log(error);
     }
