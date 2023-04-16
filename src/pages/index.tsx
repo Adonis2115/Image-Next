@@ -1,5 +1,11 @@
+import ImageDisplay from "@/components/ImageDisplay";
 import Navigation from "@/components/Navigation";
 
 export default function Home() {
-  return <Navigation />;
+  return (
+    <>
+      <Navigation />
+      <ImageDisplay />
+    </>
+  );
 }
