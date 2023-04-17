@@ -2,19 +2,14 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Image from "next/image";
-import { useRouter } from "next/router";
 
-export default function ImageDisplay(props: {
+export default function projectDisplay(props: {
   imageName: string;
   imageUrl: string;
-  imageId: number;
+  imageDescription: string;
 }) {
-  const router = useRouter();
-  function goToProject() {
-    router.push(`/project/${props.imageId}`);
-  }
   return (
-    <Card sx={{ maxWidth: 345, mt: 6, ml: 4 }} onClick={goToProject}>
+    <Card sx={{ maxWidth: 345, mt: 6, ml: 4 }}>
       <Image
         alt={props.imageName}
         src={props.imageUrl}
@@ -24,6 +19,9 @@ export default function ImageDisplay(props: {
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           {props.imageName}
+        </Typography>
+        <Typography gutterBottom variant="h5" component="div">
+          {props.imageDescription}
         </Typography>
       </CardContent>
     </Card>

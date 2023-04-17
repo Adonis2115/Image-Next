@@ -29,6 +29,7 @@ export default function Home() {
               key={index}
               imageName={image.name}
               imageUrl={image.imageUrl}
+              imageId={image.id}
             />
           );
         })}

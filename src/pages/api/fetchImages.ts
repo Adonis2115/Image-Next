@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../prisma/client";
 
-export default async function uploadS3formidable(
+export default async function fetchImages(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
