@@ -1,6 +1,8 @@
 import ImageDisplay from "@/components/ImageDisplay";
 import Navigation from "@/components/Navigation";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import Skeleton from "@/components/Skeleton";
 
 interface imageData {
   description: string;
@@ -9,30 +11,39 @@ interface imageData {
   name: string;
 }
 
+async function getData() {
+  const res = await fetch("/api/fetchImages");
+  const data = await res.json();
+  return data.message;
+}
+
 export default function Home() {
   const [images, setImages] = useState<imageData[]>([]);
+  const { status, error, data } = useQuery({
+    queryKey: ["images"],
+    queryFn: getData,
+  });
   useEffect(() => {
-    async function getData() {
-      const res = await fetch("/api/fetchImages");
-      const data = await res.json();
-      setImages(data.message);
-    }
-    getData();
-  }, []);
+    if (data) setImages(data);
+  }, [data]);
   return (
     <>
       <Navigation />
-      <div className="columns-3 mt-14">
-        {images.map((image, index) => {
-          return (
-            <ImageDisplay
-              key={index}
-              imageName={image.name}
-              imageUrl={image.imageUrl}
-              imageId={image.id}
-            />
-          );
-        })}
+      <div className="mt-14">
+        {status === "loading" ? (
+          <Skeleton />
+        ) : (
+          images.map((image, index) => {
+            return (
+              <ImageDisplay
+                key={index}
+                imageName={image.name}
+                imageUrl={image.imageUrl}
+                imageId={image.id}
+              />
+            );
+          })
+        )}
       </div>
     </>
   );

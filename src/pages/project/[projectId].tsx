@@ -1,5 +1,7 @@
 import Navigation from "@/components/Navigation";
 import ProjectDisplay from "@/components/ProjectDisplay";
+import Skeleton from "@/components/Skeleton";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -11,25 +13,30 @@ interface projectData {
   name: string;
 }
 
+async function getData(projectId: string | string[] | undefined) {
+  const data = await axios.post("/api/fetchProject", {
+    projectId,
+  });
+  return data.data.message;
+}
+
 export default function Project() {
   const router = useRouter();
   const projectId = router.query.projectId;
   const [project, setProject] = useState<projectData>();
+  const { status, error, data } = useQuery({
+    queryKey: ["image", projectId],
+    queryFn: () => getData(projectId),
+  });
   useEffect(() => {
-    async function getData() {
-      const data = await axios.post("/api/fetchProject", {
-        projectId,
-      });
-      setProject(data.data.message);
-    }
-    if (projectId !== undefined) {
-      getData();
-    }
-  }, [projectId]);
+    setProject(data);
+  }, [projectId, data]);
   return (
     <>
       <Navigation />
-      {project ? (
+      {status === "loading" ? (
+        <Skeleton />
+      ) : project ? (
         <ProjectDisplay
           imageName={project.name}
           imageDescription={project.description}
