@@ -3,6 +3,7 @@ import Navigation from "@/components/Navigation";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Skeleton from "@/components/Skeleton";
+import Head from "next/head";
 
 interface imageData {
   description: string;
@@ -28,6 +29,9 @@ export default function Home() {
   }, [data]);
   return (
     <>
+      <Head>
+        <title>Image_resize</title>
+      </Head>
       <Navigation />
       <div className="mt-14">
         {status === "loading" ? (

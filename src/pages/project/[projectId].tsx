@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Head from "next/head";
 
 interface projectData {
   description: string;
@@ -25,14 +26,18 @@ export default function Project() {
   const projectId = router.query.projectId;
   const [project, setProject] = useState<projectData>();
   const { status, error, data } = useQuery({
+    enabled: projectId != undefined,
     queryKey: ["image", projectId],
     queryFn: () => getData(projectId),
   });
   useEffect(() => {
     setProject(data);
-  }, [projectId, data]);
+  }, [data]);
   return (
     <>
+      <Head>
+        <title>{project ? project.name : "Image_resize"}</title>
+      </Head>
       <Navigation />
       {status === "loading" ? (
         <Skeleton />
